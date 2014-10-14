@@ -51,27 +51,16 @@ return array(
 			'prefix'   => '',
 		),
 
-//    'mysql' => array(
-//      'driver'    => 'mysql',
-//      'host'      => 'localhost',
-//      'database'  => 'letsbounce.it',
-//      'username'  => 'letsbounceit',
-//      'password'  => '934701973456110560',
-//      'charset'   => 'utf8',
-//      'collation' => 'utf8_unicode_ci',
-//      'prefix'    => '',
-//    ),
-
-		'mysql' => array(
-			'driver'    => 'mysql',
-			'host'      => '188.226.201.216',
-			'database'  => 'letsbounce.it',
-			'username'  => 'letsbounceit',
-			'password'  => '934701973456110560',
-			'charset'   => 'utf8',
-			'collation' => 'utf8_unicode_ci',
-			'prefix'    => '',
-		),
+    'mysql' => array(
+      'driver'    => 'mysql',
+      'host'      => 'localhost',
+      'database'  => 'letsbounce.it',
+      'username'  => 'letsbounceit',
+      'password'  => '934701973456110560',
+      'charset'   => 'utf8',
+      'collation' => 'utf8_unicode_ci',
+      'prefix'    => '',
+    ),
 
 		'pgsql' => array(
 			'driver'   => 'pgsql',
