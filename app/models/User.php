@@ -3,7 +3,8 @@ class User extends Eloquent
 {
 
 	protected $table = 'users';
-	protected $hidden = array('password', 'api_key');
+	protected $hidden = ['password'];
+  protected $fillable = ['name', 'email', 'password', 'api_key'];
 
   public function games()
   {

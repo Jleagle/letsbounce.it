@@ -9,10 +9,10 @@ Route::get('/league/{slug}', ['uses' => 'LeaguesController@league', 'as' => 'lea
 Route::api(['version' => 'v1', 'prefix' => 'api'], function()
   {
 
-    Route::get('users/all', ['uses' => 'UsersController@all']);
-    Route::get('users/view', ['uses' => 'UsersController@view']);
-    Route::post('users/add', ['uses' => 'UsersController@add']);
-    Route::post('users/login', ['uses' => 'UsersController@login']);
+    Route::get('users/all', ['uses' => 'UsersController@getAll']);
+    Route::get('users/view', ['uses' => 'UsersController@getView']);
+    Route::post('users/add', ['uses' => 'UsersController@postAdd']);
+    Route::post('users/login', ['uses' => 'UsersController@postLogin']);
 
     Route::get('games/all', ['uses' => 'GamesController@all']);
     Route::get('games/view', ['uses' => 'GamesController@view']);
