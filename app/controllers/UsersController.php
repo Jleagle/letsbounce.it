@@ -1,6 +1,5 @@
 <?php
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UsersController extends BaseController
 {
@@ -8,39 +7,59 @@ class UsersController extends BaseController
 	public function getAll()
 	{
 		$user = $this->_checkApiKey();
-		$data = Input::all();
+		$data = Input::only(['league_id']);
 
-		if (!isset($data['league_id']) || !is_numeric($data['league_id']))
+		$rules = [
+			'league_id' => 'required|integer|exists:leagues,id',
+		];
+
+		$validator = Validator::make($data, $rules);
+
+		if ($validator->passes())
 		{
-			throw new NotFoundHttpException('Incorrect league_id value');
+			return User
+				::whereHas('leagues', function($q) use($data)
+				{
+					$q->where('league_id', '=', $data['league_id']);
+
+				})
+				->select(['id', 'name'])
+				->get()
+				->toArray();
 		}
 
-		$users = LeagueUser
-			::join('users', 'users.id', '=', 'league_user.user_id')
-			->where('league_id', '=', $data['league_id'])
-			->get(['user_id', 'name']);
-
-		return $users->toArray();
+		return $this->returnError($validator);
 	}
 
+	// todo - get expected result with this user.
+	// todo - ask for league too, make sure both users are in the league
 	public function getView()
 	{
-		// todo - get expected result with this user.
-
 		$user = $this->_checkApiKey();
-		$data = Input::all();
-
-		if (isset($data['user_id']) && !is_numeric($data['user_id']))
-		{
-			throw new NotFoundHttpException('Incorrect user_id value');
-		}
+		$data = Input::only(['user_id']);
 
 		if (!isset($data['user_id']))
 		{
 			$data['user_id'] = $user->id;
 		}
 
-		return User::select('name', 'email', 'created_at')->find($data['user_id'])->toArray();
+		$rules = [
+			'user_id' => 'required|integer|exists:users,id',
+		];
+
+		$validator = Validator::make($data, $rules);
+
+		if ($validator->passes())
+		{
+			return User
+				::find($data['user_id'])
+				->select(['id', 'name', 'email'])
+				->get()
+				->first()
+				->toArray();
+		}
+
+		return $this->returnError($validator);
 	}
 
 	public function postAdd()
@@ -65,16 +84,17 @@ class UsersController extends BaseController
 				]);
 
 			return [
+				'id'      => $user->id,
 				'api_key' => $user->api_key
 			];
 		}
 
-		return $validator->messages();
+		return $this->returnError($validator);
 	}
 
 	public function postLogin()
 	{
-		$data = Input::all();
+		$data = Input::only('email', 'password');
 
 		$rules = [
 			'email'    => 'required',
@@ -85,16 +105,18 @@ class UsersController extends BaseController
 
 		if ($validator->passes())
 		{
-
-			if ($x = Auth::attempt(array('email' => $data['email'], 'password' => $data['password'])))
+			if (Auth::attempt($data))
 			{
-				return User::select('name', 'api_key')->where('email', '=', $data['email'])->first();
+				return User
+					::where('email', '=', $data['email'])
+					->first()
+					->toArray();
 			}
 
 			throw new ConflictHttpException('Invalid details');
 		}
 
-		return $validator->messages();
+		return $this->returnError($validator);
 	}
 
 	private function _makeApiKey()

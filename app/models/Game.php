@@ -1,8 +1,13 @@
 <?php
+use Illuminate\Database\Eloquent\SoftDeletingTrait;
+
 class Game extends Eloquent
 {
 
+  use SoftDeletingTrait;
+
   protected $table = 'games';
+  protected $hidden = ['password', 'deleted_at'];
 
   public function winner()
   {

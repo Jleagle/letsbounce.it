@@ -5,7 +5,6 @@ Route::post('/home', ['uses' => 'LeaguesController@postSearch']);
 
 Route::get('/league/{slug}', ['uses' => 'LeaguesController@league', 'as' => 'league']);
 
-
 Route::api(['version' => 'v1', 'prefix' => 'api'], function()
   {
 
@@ -14,13 +13,14 @@ Route::api(['version' => 'v1', 'prefix' => 'api'], function()
     Route::post('users/add', ['uses' => 'UsersController@postAdd']);
     Route::post('users/login', ['uses' => 'UsersController@postLogin']);
 
-    Route::get('games/all', ['uses' => 'GamesController@all']);
-    Route::get('games/view', ['uses' => 'GamesController@view']);
-    Route::post('games/add', ['uses' => 'GamesController@add']);
+    Route::get('games/all', ['uses' => 'GamesController@getAll']);
+    Route::get('games/view', ['uses' => 'GamesController@getView']);
+    Route::post('games/add', ['uses' => 'GamesController@postAdd']);
 
-    Route::get('leagues/exists', ['uses' => 'UsersController@all']);
-    Route::post('leagues/join', ['uses' => 'UsersController@join']);
-    Route::post('leagues/leave', ['uses' => 'UsersController@leave']);
+    Route::get('leagues/view', ['uses' => 'LeaguesController@getView']);
+    Route::get('leagues/search', ['uses' => 'LeaguesController@getSearch']);
+    Route::post('leagues/join', ['uses' => 'LeaguesController@postJoin']);
+    Route::post('leagues/leave', ['uses' => 'LeaguesController@postLeave']);
 
   }
 );

@@ -1,9 +1,16 @@
 <?php
-class User extends Eloquent
+use Illuminate\Auth\UserTrait;
+use Illuminate\Auth\UserInterface;
+use Illuminate\Database\Eloquent\SoftDeletingTrait;
+
+class User extends Eloquent implements UserInterface
 {
 
+  use UserTrait;
+  use SoftDeletingTrait;
+
 	protected $table = 'users';
-	protected $hidden = ['password'];
+	protected $hidden = ['password', 'deleted_at'];
   protected $fillable = ['name', 'email', 'password', 'api_key'];
 
   public function games()
@@ -11,9 +18,11 @@ class User extends Eloquent
     return $this->hasMany('Game');
   }
 
-  public function groupUsers()
+  public function leagues()
   {
-    return $this->hasMany('GroupUser');
+    return $this
+      ->belongsToMany('League')
+      ->withTimestamps();
   }
 
 }

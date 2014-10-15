@@ -1,7 +1,8 @@
 <?php
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
-class BaseController extends Controller {
+class BaseController extends Controller
+{
 
 	/**
 	 * Setup the layout used by the controller.
@@ -10,7 +11,7 @@ class BaseController extends Controller {
 	 */
 	protected function setupLayout()
 	{
-		if ( ! is_null($this->layout))
+		if(!is_null($this->layout))
 		{
 			$this->layout = View::make($this->layout);
 		}
@@ -53,6 +54,30 @@ class BaseController extends Controller {
 		}
 
 		return $text;
+	}
+
+  protected function returnError($errors)
+	{
+		if ($errors instanceof Validator)
+		{
+			$errors = $errors->messages();
+		}
+
+		if (!is_array($errors))
+		{
+			$errors = [$errors];
+		}
+
+		return ['errors' => $errors];
+	}
+
+	protected function removeByValue($array, $value)
+	{
+		if(($key = array_search($value, $array)) !== false)
+		{
+			unset($array[$key]);
+		}
+		return $array;
 	}
 
 }

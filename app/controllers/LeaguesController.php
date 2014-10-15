@@ -1,45 +1,113 @@
 <?php
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 
 class LeaguesController extends BaseController
 {
 
-	public function search()
+	public function getView()
 	{
-		return View::make('home');
-	}
+		$user = $this->_checkApiKey();
+		$data = Input::only(['league_id']);
 
-	public function postSearch()
-	{
-		$data = Input::all();
+		$rules = [
+			'league_id' => 'required|integer|exists:leagues,id',
+		];
 
-		try
+		$validator = Validator::make($data, $rules);
+
+		if ($validator->passes())
 		{
-			$league = League::where('name', '=', $data['name'])->firstOrFail();
+
+			return League
+				::where('id', '=', $data['league_id'])
+				->select(['id', 'author_id', 'name', 'slug', 'k_factor'])
+				->with(array('users' => function($q){
+						$q->select('users.id', 'name');
+					}))
+				->with(array('games' => function($q){
+						//$q->select('id', 'name'); // todo
+					}))
+				->with(array('author' => function($q){
+						$q->select('id', 'name');
+					}))
+				->get()
+				->toArray();
 		}
-		catch(ModelNotFoundException $e)
+
+		return $this->returnError($validator);
+	}
+
+	public function getSearch()
+	{
+		$user = $this->_checkApiKey();
+		$data = Input::only(['league_name']);
+
+		$rules = [
+			'league_name' => 'required|exists:leagues,name',
+		];
+
+		$validator = Validator::make($data, $rules);
+
+		if ($validator->passes())
 		{
-			return Redirect::route('search')->withErrors(['error' => 'Not Found'])->withInput($data);
+			return League
+				::select(['id', 'name', 'slug', 'k_factor'])
+				->where('name', '=', $data['league_name'])
+				->first()
+				->toArray();
 		}
 
-		return Redirect::route('league', $league->slug);
+		return $this->returnError($validator);
 	}
 
-	public function league($slug)
+	public function postJoin()
 	{
-		$league = League::where('slug', '=', $slug)->firstOrFail();
+		$user = $this->_checkApiKey();
+		$data = Input::only(['league_id']);
 
-		return View::make('league', ['league' => $league]);
+		$rules = [
+			'league_id' => 'required|integer',
+		];
+
+		$validator = Validator::make($data, $rules);
+
+		if ($validator->passes())
+		{
+			try
+			{
+				$league = League::find($data['league_id']);
+				$league->users()->attach($user->id);
+			}
+			catch(QueryException $e)
+			{
+			}
+
+			return ['success' => true];
+		}
+
+		return $this->returnError($validator);
 	}
 
-	public function leagueExists($leagueName)
+	public function postLeave()
 	{
-		//
-	}
+		$user = $this->_checkApiKey();
+		$data = Input::only(['league_id']);
 
-	public function joinLeague($leagueId)
-	{
-		//
+		$rules = [
+			'league_id' => 'required|integer',
+		];
+
+		$validator = Validator::make($data, $rules);
+
+		if ($validator->passes())
+		{
+			$league = League::find($data['league_id']);
+			$league->users()->detach($user->id);
+
+			return ['success' => true];
+		}
+
+		return $this->returnError($validator);
 	}
 
 }
