@@ -1,9 +1,8 @@
 <?php
 Route::get('/', ['uses' => 'HomeController@index']);
-Route::get('/home', ['uses' => 'LeaguesController@search', 'as' => 'search']);
-Route::post('/home', ['uses' => 'LeaguesController@postSearch']);
-
-Route::get('/league/{slug}', ['uses' => 'LeaguesController@league', 'as' => 'league']);
+Route::get('/home', ['uses' => 'HomeController@search', 'as' => 'search']);
+Route::post('/home', ['uses' => 'HomeController@postSearch']);
+Route::get('/league/{slug}', ['uses' => 'HomeController@league', 'as' => 'league']);
 
 Route::api(['version' => 'v1', 'prefix' => 'api'], function()
   {
