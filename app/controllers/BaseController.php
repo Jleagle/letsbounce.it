@@ -19,7 +19,6 @@ class BaseController extends Controller
 
 	protected function _checkApiKey()
 	{
-
 		$user = User::where('api_key', '=', Input::get('api_key'))->first();
 
 		if (!$user)
@@ -28,7 +27,6 @@ class BaseController extends Controller
 		}
 
 		return $user;
-
 	}
 
 	protected function makeSlug($text)

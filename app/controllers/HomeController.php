@@ -30,4 +30,9 @@ class HomeController extends BaseController
 		return Redirect::route('league', $league->slug);
 	}
 
+	public function api404()
+	{
+		return $this->returnError('NO_SUCH_API_METHOD');
+	}
+
 }

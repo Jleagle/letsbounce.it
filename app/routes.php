@@ -21,5 +21,7 @@ Route::api(['version' => 'v1', 'prefix' => 'api'], function()
     Route::post('leagues/join', ['uses' => 'LeaguesController@postJoin']);
     Route::post('leagues/leave', ['uses' => 'LeaguesController@postLeave']);
 
+    Route::any('{slug}', ['uses' => 'HomeController@api404'])->where('slug', '(.*)?');
+
   }
 );
